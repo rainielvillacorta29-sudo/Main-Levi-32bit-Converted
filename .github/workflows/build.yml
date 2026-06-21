@@ -10,25 +10,30 @@ jobs:
   steps:
   - uses: actions/checkout@v4
 
-  - run: sudo apt-get update && sudo apt-get install -y unzip
+  - name: Install unzip
+    run: sudo apt-get update && sudo apt-get install -y unzip
 
-  - run: unzip "LeviLaunchroid-1.4.10-32bit-source.zip" -d source
+  - name: Extract source
+    run: unzip "LeviLaunchroid-1.4.10-32bit-source.zip" -d source
 
   - uses: actions/setup-java@v4
     with:
       distribution: temurin
       java-version: '17'
 
+  - name: Find gradlew
+    run: find source -name gradlew
+
   - name: Make gradlew executable
-    run: chmod +x source/gradlew
+    run: chmod +x $(find source -name gradlew)
 
   - name: Build APK
     run: |
-      cd source
+      cd $(dirname $(find source -name gradlew))
       ./gradlew assembleRelease
 
   - name: Upload APK
     uses: actions/upload-artifact@v4
     with:
       name: apk
-      path: source/app/build/outputs/apk/**/*.apk
+      path: source/**/app/build/outputs/apk/**/*.apk
