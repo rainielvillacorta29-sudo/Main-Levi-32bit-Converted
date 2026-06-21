@@ -19,11 +19,16 @@ jobs:
       distribution: temurin
       java-version: '17'
 
-  - name: Show extracted files
-    run: find source
+  - name: Make gradlew executable
+    run: chmod +x source/gradlew
 
-  - name: Upload source listing
+  - name: Build APK
+    run: |
+      cd source
+      ./gradlew assembleRelease
+
+  - name: Upload APK
     uses: actions/upload-artifact@v4
     with:
-      name: source-tree
-      path: source
+      name: apk
+      path: source/app/build/outputs/apk/**/*.apk
